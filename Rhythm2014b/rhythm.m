@@ -6,7 +6,7 @@ close all; clc;
 % By Matt Sulkin, Jake Laughner, Xinyuan Sophia Cui, Jed Jackoway
 % Washington University in St. Louis -- Efimov Lab
 %
-% Currently maintained by: Christopher Gloschat [Jan. 2015 - Present]
+% Currently maintain by: Christopher Gloschat [Jan. 2015 - Present]
 %
 % For any questions and suggestions, please email us at:
 % cgloschat@gmail.com or igor@wustl.edu
