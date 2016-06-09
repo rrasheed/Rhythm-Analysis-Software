@@ -1,4 +1,4 @@
-function [apdC] = apdCalc(data,start,endp,Fs,percent,maxAPD,minAPD,motion,coordinate,bg)
+function [apdC] = apdCalc(data,start,endp,Fs,percent,maxAPD,minAPD,motion,coordinate,bg,cmap)
 
 % The function [actC] = apdCalc() calculates the mean APD and the standard
 %deviation in the area selected. 
@@ -53,23 +53,23 @@ apd_data = normalize_data(apd_data,Fs); %re-normalize windowed data
 if motion==1
     apd_data=reshape(apd_data,(coordinate(3)+1)*(coordinate(4)+1),[]);
 for  i=1:coordinate(3)*coordinate(4) 
-             [peaks,location] = findpeaks(apd_data(i,:), 'minpeakheight', .7);
+             [~,location] = findpeaks(apd_data(i,:), 'minpeakheight', .7);
              if length(location)>1
                  apd_data(i,:)=nan;
              end
 end
-apd_data=reshape(apd_data,coordinate(3)+1,coordinate(4)+1,[]);
+apd_data=reshape(apd_data,coordinate(3)+1,coordinate(4)+1,[])';
 end
 
 %%Determining activation time point
 % Find First Derivative and time of maximum
 apd_data2 = diff(apd_data,1,3); % first derivative
-[max_der max_i] = max(apd_data2,[],3); % find location of max derivative
+[~,max_i] = max(apd_data2,[],3); % find location of max derivative
 
 
 %%Find location of repolarization
 %%Find maximum of the signal 
-[maxVal maxValI] = max(apd_data,[],3);
+[~,maxValI] = max(apd_data,[],3);
 
 %locs is a temporary holding place
 locs = zeros(size(apd_data,1),size(apd_data,2));
@@ -104,17 +104,19 @@ apdMap(apdMap>maxAPD) = nan;
 apdMap(apdMap<minAPD) = nan; 
 
 % %calculating mean and std
- apd_mean=nanmean(apdMap(:))
- apd_std=nanstd(apdMap(:))
- apd_median=nanmedian(apdMap(:))
-
+apd_mean=nanmean(apdMap(:));
+disp(['The average APD in the region is ' num2str(apd_mean) '.'])
+apd_std=nanstd(apdMap(:));
+disp(['The standard deviation of APDs in the region is ' num2str(apd_std) '.'])
+apd_median=nanmedian(apdMap(:));
+disp(['The median APD in the region is ' num2str(apd_median) '.'])
 
 %Setting up values to use for color axis
 APD_min = mean(apdMap(isfinite(apdMap))) - 2*std(apdMap(isfinite(apdMap)));
 APD_max = mean(apdMap(isfinite(apdMap))) + 2*std(apdMap(isfinite(apdMap)));
 
 % Plot APDMap
-cc=figure('Name','APD Map');
+figure('Name','APD Map');
 
 % Create Mask
 actMap_Mask=zeros(size(bg));
@@ -124,22 +126,26 @@ actMap_Mask2=zeros(size(bg));
 actMap_Mask2(coordinate(2):coordinate(2)+coordinate(4),coordinate(1):coordinate(1)+coordinate(3))=apdMap;
 %Build Image
 G =real2rgb(bg, 'gray');
-J=real2rgb(actMap_Mask2,'jet',[APD_min APD_max]);
+J=real2rgb(actMap_Mask2,cmap,[APD_min APD_max]);
 A=real2rgb(actMap_Mask,'gray');
 
 I = J .* A + G .* (1-A);
 
-subplot(1,3,1)
+subplot(1,2,1)
 image(I)
+colormap(cmap)
 axis image
 set(gca,'XTick',[],'YTick',[],'Xlim',[0 size(data,1)],'YLim',[0 size(data,2)])
-subplot(1,3,2)
+subplot(1,2,2)
 imagesc(apdMap)
+colormap(cmap)
 axis image
 colorbar
 caxis([APD_min APD_max])
-subplot(1,3,3)
+figure('Name','Histogram of APD')
 hist(reshape(apdMap,[],1),floor(APD_max-APD_min)*2)
-xlim([APD_min APD_max])
+
+
+apdC = apdMap;
 
 end

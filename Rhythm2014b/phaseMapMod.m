@@ -1,4 +1,4 @@
-function phaseMap(data,starttime,endtime,Fs,cmap)
+function [phase] = phaseMapMod(data,starttime,endtime,cmap)
 %% Hilbert Transform Generated Phase Map
 %
 % INPUTS
@@ -21,7 +21,7 @@ function phaseMap(data,starttime,endtime,Fs,cmap)
 %
 % AUTHOR: Jake Laughner
 %
-% MAINTED BY: Christopher Gloschat - (cgloschat@gmail.com) - [Jan. 2015 - Present]
+% MAINTAINED BY: Christopher Gloschat - (cgloschat@gmail.com) - [Jan. 2015 - Present]
 %
 % MODIFICATION LOG:
 % February 12, 2015 - I restructured the code to first calculate phase,
@@ -31,7 +31,7 @@ function phaseMap(data,starttime,endtime,Fs,cmap)
 %
 %% Code %%
     % Calculate Hilbert Transform
-    data = data(:,:,round(starttime*Fs+1):round(endtime*Fs+1));
+%     data = data(:,:,round(starttime*Fs+1):round(endtime*Fs+1));
     temp = reshape(data,[],size(data,3)) - repmat(mean(reshape(data,[],size(data,3)),2),[1 size(data,3)]);
     hdata = hilbert(temp');
     phase = -1*angle(hdata)';
@@ -55,7 +55,7 @@ function phaseMap(data,starttime,endtime,Fs,cmap)
     % Convert filename to a character string
     filename = char(filename);
     % Create path to file
-    movname = [dir,'/',filename,'.avi'];
+    movname = [dir,'/',filename, '.avi'];
     
     % Capture video fo the Hilbert Transform represented phase over window
     fig = figure('Name',filename,'Visible','off');
@@ -68,15 +68,14 @@ function phaseMap(data,starttime,endtime,Fs,cmap)
     gg = waitbar(0,'Producing Phase Map','Visible','off');
     tmp = get(gg,'Position');
     set(gg,'Position',[tmp(1) tmp(2)/4 tmp(3) tmp(4)],'Visible','on')
-    axes(pa)
-    for i = 1:size(data,3)      
-        imagesc(phase(:,:,i),'Parent',pa);
-        colormap(fig,cmap)
-        colorbar(pa)
-        caxis(pa,[-pi pi])
-        axis(pa,'image')
-        axis(pa,'off')
-        pause(.05)
+    for i = 1:size(data,3)
+        imagesc(phase(:,:,i),'Parent',pa)
+        colormap(cmap)
+        colorbar
+        caxis([-pi pi])
+        axis image
+        axis off
+        pause(.001)
         F = getframe(fig);
         writeVideo(vidObj,F);% Write each frame to the file.
         % Update progress bar

@@ -201,9 +201,7 @@ else
     cmosData = reshape(cmosData,[xPixels yPixels numFrames]);
     cmosData = cmosData(xSkipPix+1:xSkipPix+xActPix,ySkipPix+1:ySkipPix+yActPix,:);
     if size(cmosData,1) ~= size(bgimage,1)
-        % For some reason images taken with D225 cameras need to be rotated
-        cmosData = rot90(cmosData,3);
-    end
+    cmosData = rot90(cmosData,3);
     % Analog inputs 
     channel = cell(4,1);
     for n = 1:4

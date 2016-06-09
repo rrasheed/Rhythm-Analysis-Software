@@ -1,4 +1,4 @@
-function calDomFreq(data,Fs)
+function calDomFreq(data,Fs,cmap)
 %% Window Data with Tukey Window to Minimize Edge Effects
 w_m = tukeywin(size(data,3),.05);
 win = repmat(permute(w_m,[3 2 1]),[size(data,1),size(data,2)]);
@@ -13,7 +13,7 @@ p_s = 2*abs(p(:,:,1:n/2+1));    % Single-sided power
 f(1) = [];                      % Remove DC
 p_s(:,:,1) = [];                % Remove DC component
 %% Find Dominant Frequency
-[val ind] = max(p_s,[],3);
+[val,ind] = max(p_s,[],3);
 maxf = f(ind).*isfinite(val);
-figure; imagesc(maxf); colorbar
+figure; imagesc(maxf); colormap(cmap);colorbar
 caxis([mean2(maxf)*.1 mean2(maxf)*2])

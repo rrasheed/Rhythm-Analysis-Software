@@ -1,4 +1,4 @@
-function rhythm
+function rhythm_new
 % % close all; clc;
 %% RHYTHM (01/27/2012)
 % Matlab software for analyzing optical mapping data
@@ -58,11 +58,9 @@ set(f,'WindowButtonUpFcn',{@button_up_function});
 set(f,'WindowButtonMotionFcn',{@button_motion_function});
 
 % Signal Display Screens for Optical Action Potentials
-signal_scrn1 = axes('Parent',p1,'Units','Pixels','Color','w','XTick',[],'Position',[710,572,498,120]);
-signal_scrn2 = axes('Parent',p1,'Units','Pixels','Color','w','XTick',[],'Position',[710,444,498,120]);
-signal_scrn3 = axes('Parent',p1,'Units','Pixels','Color','w','XTick',[],'Position',[710,316,498,120]);
-signal_scrn4 = axes('Parent',p1,'Units','Pixels','Color','w','XTick',[],'Position',[710,188,498,120]);
-signal_scrn5 = axes('Parent',p1,'Units','Pixels','Color','w','Position',[710,60,498,120]);
+signal_scn1 = axes('Parent',p1,'Units','Pixels','Color','w','XTick',[],'Position',[710, 575,500,210]);
+signal_scn2 = axes('Parent',p1,'Units','Pixels','Color','w','XTick',[],'Position',[710, 325,500,210]);
+signal_scn3 = axes('Parent',p1,'Units','Pixels','Color','w','XTick',[],'Position',[710, 75, 500,210]);
 xlabel('Time (sec)');
 expwave_button = uicontrol('Parent',p1,'Style','pushbutton','FontSize',12,'String','Export OAPs','Position',[1115 1 100 30],'Callback',{@expwave_button_callback});
 starttimesig_text = uicontrol('Parent',p1,'Style','text','FontSize',12,'String','Start Time','Position',[830 9 55 15]);
@@ -101,7 +99,7 @@ set(filt_popup,'Value',3)
 
 % Optical Action Potential Analysis Button Group and Buttons
 % Create Button Group
-anal_data = uibuttongroup('Parent',p1,'Title','Analyze Data','FontSize',12,'Position',[0.275 0.015 .150 .180]);
+anal_data = uibuttongroup('Parent',p1,'Title','Analyze Data','FontSize',12,'Position',[0.275 0.015 .272 .180]);
 
 anal_select = uicontrol('Parent',anal_data,'Style','popupmenu','FontSize',12,'String',{'-----','Activation','Conduction','APD','Phase','Dominant Frequency'},'Position',[5 85 165 25],'Callback',{@anal_select_callback});
 
@@ -125,14 +123,9 @@ remove_motion_click = uicontrol('Parent',anal_data,'Style','checkbox','FontSize'
 remove_motion_click_txt = uicontrol('Parent',anal_data,'Style','text','FontSize',12,'String','Motion','Visible','on','Position',[248 15 50 25]);
 calc_apd_button = uicontrol('Parent',anal_data,'Style','pushbutton','FontSize',12,'String','Regional APD','Position',[125 2 103 30],'Callback',{@calc_apd_button_callback});
 
-% Check boxes to allow choice of voltage plot, Ca plot, or both
-plot_choice = uibuttongroup('Parent',p1,'Title','Plot Choice','FontSize',12,'Position',[0.435 0.038 .100 .160]);
-volt_choice = uicontrol('Parent',plot_choice,'Style','checkbox','FontSize',12,'String','Plot Voltage','Position',[5 60 165 25],'Callback',@checkbox_volt);
-cal_choice = uicontrol('Parent',plot_choice,'Style','checkbox','FontSize',12,'String','Plot Calcium','Position',[5 30 165 25],'Callback',@checkbox_cal);
-
 % Allow all GUI structures to be scaled when window is dragged
-set([f,p1,filelist,selectdir,refreshdir,loadfile,movie_scrn,movie_slider, signal_scrn1,signal_scrn2,signal_scrn3,...
-    signal_scrn4,signal_scrn5,sweep_bar,play_button,stop_button,dispwave_button,expmov_button,cond_sig,removeBG_button,...
+set([f,p1,filelist,selectdir,refreshdir,loadfile,movie_scrn,movie_slider, signal_scn1,signal_scn2,signal_scn3,...
+    sweep_bar,play_button,stop_button,dispwave_button,expmov_button,cond_sig,removeBG_button,...
     bg_thresh_label,perc_ex_label,bg_thresh_edit,perc_ex_edit,bin_button,filt_button,removeDrift_button,norm_button,...
     apply_button,bin_popup,filt_popup,drift_popup,export_button,anal_data,anal_select,invert_cmap,starttimemap_text,...
     starttimemap_edit,endtimemap_text,endtimemap_edit,createmap_button,minapd_text,minapd_edit,maxapd_text,maxapd_edit,...
@@ -220,13 +213,13 @@ handles.apdC = [];  % variable for storing apd calculations
                 j = j_temp;
                 switch handles.grabbed
                     case 1
-                        plot(handles.time,squeeze(handles.cmosData(j,i,:)),'b','LineWidth',2,'Parent',signal_scrn1)
+                        plot(handles.time,squeeze(handles.cmosData(j,i,:)),'b','LineWidth',2,'Parent',signal_scn1)
                         handles.M(1,:) = [i j];
                     case 2
-                        plot(handles.time,squeeze(handles.cmosData(j,i,:)),'g','LineWidth',2,'Parent',signal_scrn2)
+                        plot(handles.time,squeeze(handles.cmosData(j,i,:)),'g','LineWidth',2,'Parent',signal_scn2)
                         handles.M(2,:) = [i j];
                     case 3
-                        plot(handles.time,squeeze(handles.cmosData(j,i,:)),'m','LineWidth',2,'Parent',signal_scrn3)
+                        plot(handles.time,squeeze(handles.cmosData(j,i,:)),'y','LineWidth',2,'Parent',signal_scn3)
                         handles.M(3,:) = [i j];
                     case 4
                         plot(handles.time,squeeze(handles.cmosData(j,i,:)),'k','LineWidth',2,'Parent',signal_scrn4)
@@ -266,7 +259,7 @@ handles.apdC = [];  % variable for storing apd calculations
             msgbox('Warning: No data selected','Title','warn')
         else
             % Clear off all images from previous set of data
-            cla(movie_scrn); cla(signal_scrn1); cla(signal_scrn2); cla(signal_scrn3)
+            cla(movie_scrn); cla(signal_scn1); cla(signal_scn2); cla(signal_scn3)
             cla(signal_scrn4); cla(signal_scrn5);  cla(sweep_bar)
             % Initialize handles
             handles.M = []; % this handle stores the locations of the markers
@@ -333,12 +326,12 @@ handles.apdC = [];  % variable for storing apd calculations
             % Scale signal screens and sweep bar to appropriate time scale
             timeStep = 1/handles.Fs;
             handles.time = 0:timeStep:size(handles.cmosData,3)*timeStep-timeStep;
-            set(signal_scrn1,'XLim',[min(handles.time) max(handles.time)])
-            set(signal_scrn1,'NextPlot','replacechildren')
-            set(signal_scrn2,'XLim',[min(handles.time) max(handles.time)])
-            set(signal_scrn2,'NextPlot','replacechildren')
-            set(signal_scrn3,'XLim',[min(handles.time) max(handles.time)])
-            set(signal_scrn3,'NextPlot','replacechildren')
+            set(signal_scn1,'XLim',[min(handles.time) max(handles.time)])
+            set(signal_scn1,'NextPlot','replacechildren')
+            set(signal_scn2,'XLim',[min(handles.time) max(handles.time)])
+            set(signal_scn2,'NextPlot','replacechildren')
+            set(signal_scn3,'XLim',[min(handles.time) max(handles.time)])
+            set(signal_scn3,'NextPlot','replacechildren')
             set(signal_scrn4,'XLim',[min(handles.time) max(handles.time)])
             set(signal_scrn4,'NextPlot','replacechildren')
             set(signal_scrn5,'XLim',[min(handles.time) max(handles.time)])
@@ -528,30 +521,24 @@ handles.apdC = [];  % variable for storing apd calculations
         set(f,'CurrentAxes',movie_scrn)
         [i_temp,j_temp] = myginput(1,'circle');
         i = round(i_temp); j = round(j_temp);
-        
         %make sure pixel selected is within movie_scrn
         if i_temp>size(handles.cmosData,1) || j_temp>size(handles.cmosData,2) || i_temp<=1 || j_temp<=1
-            % tell user to pick new pixel
             msgbox('Warning: Pixel Selection out of Boundary','Title','help')
         else
-            check = 1;
-        end
-        
-        if check == 1;
             % Find the correct wave window
-            if handles.wave_window == 6
+            if handles.wave_window == 7
                 handles.wave_window = 1;
             end
             wave_window = handles.wave_window;
             switch wave_window
                 case 1
-                    plot(handles.time,squeeze(handles.cmosData(j,i,:)),'b','LineWidth',2,'Parent',signal_scrn1)
+                    plot(handles.time,squeeze(handles.cmosData(j,i,:)),'b','LineWidth',2,'Parent',signal_scn1)
                     handles.M(1,:) = [i j];
                 case 2
-                    plot(handles.time,squeeze(handles.cmosData(j,i,:)),'g','LineWidth',2,'Parent',signal_scrn2)
+                    plot(handles.time,squeeze(handles.cmosData(j,i,:)),'g','LineWidth',2,'Parent',signal_scn2)
                     handles.M(2,:) = [i j];
                 case 3
-                    plot(handles.time,squeeze(handles.cmosData(j,i,:)),'m','LineWidth',2,'Parent',signal_scrn3)
+                    plot(handles.time,squeeze(handles.cmosData(j,i,:)),'m','LineWidth',2,'Parent',signal_scn3)
                     handles.M(3,:) = [i j];
                 case 4
                     plot(handles.time,squeeze(handles.cmosData(j,i,:)),'k','LineWidth',2,'Parent',signal_scrn4)
@@ -669,9 +656,9 @@ handles.apdC = [];  % variable for storing apd calculations
         val01 = str2double(get(source,'String'));
         val02 = str2double(get(endtimesig_edit,'String'));
         if val01 >= 0 && val01 <= (size(handles.cmosData,3)-1)*handles.Fs
-            set(signal_scrn1,'XLim',[val01 val02]);
-            set(signal_scrn2,'XLim',[val01 val02]);
-            set(signal_scrn3,'XLim',[val01 val02]);
+            set(signal_scn1,'XLim',[val01 val02]);
+            set(signal_scn2,'XLim',[val01 val02]);
+            set(signal_scn3,'XLim',[val01 val02]);
             set(signal_scrn4,'XLim',[val01 val02]);
             set(signal_scrn5,'XLim',[val01 val02]);
             set(sweep_bar,'XLim',[val01 val02]);
@@ -689,9 +676,9 @@ handles.apdC = [];  % variable for storing apd calculations
         val01 = str2double(get(starttimesig_edit,'String'));
         val02 = str2double(get(source,'String'));
         if val02 >= 0 && val02 <= (size(handles.cmosData,3)-1)*handles.Fs
-            set(signal_scrn1,'XLim',[val01 val02]);
-            set(signal_scrn2,'XLim',[val01 val02]);
-            set(signal_scrn3,'XLim',[val01 val02]);
+            set(signal_scn1,'XLim',[val01 val02]);
+            set(signal_scn2,'XLim',[val01 val02]);
+            set(signal_scn3,'XLim',[val01 val02]);
             set(signal_scrn4,'XLim',[val01 val02]);
             set(signal_scrn5,'XLim',[val01 val02]);
             set(sweep_bar,'XLim',[val01 val02]);
@@ -845,11 +832,11 @@ handles.apdC = [];  % variable for storing apd calculations
         hold off
         % Update signal waves (yes this is ugly.  if you find a better way, please change)
         if a>=1
-            plot(handles.time,squeeze(handles.cmosData(M(1,2),M(1,1),:)),'b','LineWidth',2,'Parent',signal_scrn1)
+            plot(handles.time,squeeze(handles.cmosData(M(1,2),M(1,1),:)),'b','LineWidth',2,'Parent',signal_scn1)
             if a>=2
-                plot(handles.time,squeeze(handles.cmosData(M(2,2),M(2,1),:)),'g','LineWidth',2,'Parent',signal_scrn2)
+                plot(handles.time,squeeze(handles.cmosData(M(2,2),M(2,1),:)),'g','LineWidth',2,'Parent',signal_scn2)
                 if a>=3
-                    plot(handles.time,squeeze(handles.cmosData(M(3,2),M(3,1),:)),'m','LineWidth',2,'Parent',signal_scrn3)
+                    plot(handles.time,squeeze(handles.cmosData(M(3,2),M(3,1),:)),'m','LineWidth',2,'Parent',signal_scn3)
                     if a>=4
                         plot(handles.time,squeeze(handles.cmosData(M(4,2),M(4,1),:)),'k','LineWidth',2,'Parent',signal_scrn4)
                         if a>=5
@@ -928,9 +915,8 @@ handles.apdC = [];  % variable for storing apd calculations
         axes(movie_scrn)
         coordinate=getrect(movie_scrn);
         gg=msgbox('Creating Regional APD...');
-        apdCalc(handles.cmosData,handles.a_start,handles.a_end,handles.Fs,...
-            handles.percentAPD,handles.maxapd,handles.minapd,remove_motion_state,...
-            coordinate,handles.bg,handles.cmap);
+        apdCalc(handles.cmosData,handles.a_start,handles.a_end,handles.Fs,handles.percentAPD,handles.maxapd,...
+            handles.minapd,remove_motion_state,coordinate,handles.bg,handles.cmap);
         close(gg)
     end
 
@@ -981,45 +967,6 @@ handles.apdC = [];  % variable for storing apd calculations
              set(starttimemap_edit,'String',0)
          end
      end
- 
- 
- %% Checkbox to manipulate plot on signal screens when VOLTAGE is checked
-     function checkbox_volt(source,~)
-         chkbx1 = get(source,'Value'); % gives value of 1 or 0 to indicate voltage checkbox status
-         chkbx2 = get(cal_choice,'Value'); % gives value of 1 or 0 to indicate calcium checkbox status
-         if chkbx1==1 && chkbx2==1
-             plot()
-             hold
-             plot()
-         elseif chkbx1==0 && chkbx2==1
-             ttttt
-         elseif chkbx1==1 && chkbx2==0
-             ttttt
-         else
-             cla(signal_scrn1); cla(signal_scrn2); cla(signal_scrn3); cla(signal_scrn4); cla(signal_scrn5);
-         end
-     end
- 
- 
- %% %% Checkbox to manipulate plot on signal screens when CALCIUM is checked
-    function checkbox_cal(source,~)
-        chkbx1 = get(volt_choice,'Value');
-        chkbx2 = get(source,'Value');
-        if chkbx1==1 && chkbx2==1
-             ttttt
-         elseif chkbx1==0 && chkbx2==1
-             ttttt
-         elseif chkbx1==1 && chkbx2==0
-             ttttt
-         else
-             cla(signal_scrn1); cla(signal_scrn2); cla(signal_scrn3); cla(signal_scrn4); cla(signal_scrn5);
-         end
-    end
-
- 
-         
-         
-       
  
 %% Button to create activation map
     function createmap_button_callback(~,~)

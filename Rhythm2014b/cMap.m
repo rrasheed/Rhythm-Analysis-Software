@@ -70,13 +70,13 @@ mask = max(temp,[],3) > 0;
 % Remove non-connected artifacts
 CC = bwconncomp(mask,4);
 numPixels = cellfun(@numel,CC.PixelIdxList);
-[biggest,idx] = max(numPixels);
+[~,idx] = max(numPixels);
 mask_id = CC.PixelIdxList{idx};
 mask2(mask_id) = 1;
 
 % Find First Derivative and time of maxium
 temp2 = diff(temp,1,3); % first derivative
-[max_der max_i] = max(temp2,[],3); % find location of max derivative
+[~,max_i] = max(temp2,[],3); % find location of max derivative
 
 % Create Activation Map
 actMap1 = max_i.*mask;
@@ -154,7 +154,7 @@ actMap1 = actMap1/Fs*1000; %% time in ms
 %% Find Conduction Velocity Map - Efimov Method
 % Fit Activation Map with New Surface based on Kernel Smoothing
 cind = isfinite(actMap1);
-[x y]= meshgrid(1:size(data,2),1:size(data,1));
+[x,y]= meshgrid(1:size(data,2),1:size(data,1));
 x = reshape(x,[],1);
 y = reshape(y,[],1);
 z = reshape(actMap1,[],1);
@@ -173,7 +173,7 @@ mask(:,end) = 0;
 Z = Z_fit.*mask;
 Z(Z==0) = nan;
 % Find Gradient of Polynomial Surface
-[Tx Ty] = gradient(Z);
+[Tx,Ty] = gradient(Z);
 % Calculate Conduction Velocity
 Vx = Tx./(Tx.^2+Ty.^2);
 Vy = -Ty./(Tx.^2+Ty.^2);
@@ -182,13 +182,20 @@ rect = round(rect);
 temp_Vx = Vx(rect(2):rect(2)+rect(4),rect(1):rect(1)+rect(3));
 temp_Vy = Vy(rect(2):rect(2)+rect(4),rect(1):rect(1)+rect(3));
 temp_V = V(rect(2):rect(2)+rect(4),rect(1):rect(1)+rect(3));
-medV = median(median(temp_V(isfinite(temp_V))))
-stdV = std2(temp_V(isfinite(temp_V)))
-medAng = median(median(atan2(temp_Vy(isfinite(temp_Vy)),temp_Vx(isfinite(temp_Vy))).*180/pi))
-stdAng = std2(atan2(temp_Vy(isfinite(temp_Vy)),temp_Vx(isfinite(temp_Vy))).*180/pi)
-num_vectors = numel(temp_V(isfinite(temp_V)))
+% Display the regional statistics
+disp('Regional conduction velocity statistics:')
+medV = median(median(temp_V(isfinite(temp_V))));
+disp(['The median value is ' num2str(medV) ' pixels/ms.'])
+stdV = std2(temp_V(isfinite(temp_V)));
+disp(['The standard deviation is ' num2str(stdV) '.'])
+medAng = median(median(atan2(temp_Vy(isfinite(temp_Vy)),temp_Vx(isfinite(temp_Vy))).*180/pi));
+disp(['The median angle is ' num2str(medAng) ' degrees.'])
+stdAng = std2(atan2(temp_Vy(isfinite(temp_Vy)),temp_Vx(isfinite(temp_Vy))).*180/pi);
+disp(['The standard deviation of the angle is ' num2str(stdAng) '.'])
+num_vectors = numel(temp_V(isfinite(temp_V)));
+disp(['The number of vectors is ' num2str(num_vectors) '.'])
 % Plot Results
-cv_wholeheart = figure('Name','Whole Heart Conduction Velocity');
+figure('Name','Whole Heart Conduction Velocity')
 contourf(flipud(actMap1),(endp-stat)/2,'LineColor','k')
 title('Whole Heart Conduction Velocity with Activation')
 colormap bone
